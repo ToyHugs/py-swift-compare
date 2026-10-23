@@ -1,0 +1,58 @@
+# Copier en config.ini et adapter.
+# Les mots de passe ne doivent PAS être écrits ici : ils sont lus dans les
+# variables d'environnement SWIFT_CTRL_PASSWORD / SWIFT_TEST_PASSWORD,
+# ou demandés au lancement.
+
+[run]
+msg_type = 535
+
+# Plage par défaut pour les deux bases (date de fin incluse).
+# Formats : 2026-10-21 / 2026-10-21 14:30 / 2026-10-21 14:30:00
+# Surchargeable par base (date_from / date_to dans [ctrl] ou [test])
+# ou en ligne de commande (--from/--to, --ctrl-from/--ctrl-to, --test-from/--test-to).
+date_from = 2026-10-20
+date_to = 2026-10-20
+
+# Champs exclus de la comparaison : TAG ou TAG:QUALIFIANT, séparés par des virgules.
+# 28E = n° de page, 20C:SEME = référence propre à chaque message, 98x:PREP = horodatage.
+ignore = 28E, 20C:SEME, 98A:PREP, 98C:PREP
+
+output = recon_mt535.xlsx
+sqlite = recon_mt535.sqlite
+
+
+[ctrl]
+user = MON_USER
+dsn = serveur-ctrl:1521/SERVICE_CTRL
+table = SCHEMA.TABLE_SWIFT
+id_column = MSG_ID
+msg_column = MSG_TEXT
+# Colonne filtrée par la plage de dates. Par défaut : "TIMESTAMP"
+# (entre guillemets car TIMESTAMP est un mot réservé Oracle).
+ts_column = "TIMESTAMP"
+# Facultatif : colonne du type de message (filtre LIKE '%535').
+# Laisser vide pour détecter le type dans le bloc 2 du message.
+type_column = MSG_TYPE
+# Facultatif : filtre SQL supplémentaire, ajouté avec AND (...)
+where =
+# Facultatif : plage propre à cette base (prioritaire sur [run])
+# date_from = 2026-10-20
+# date_to = 2026-10-20
+
+# Mode thick (Instant Client) seulement si le mode par défaut échoue,
+# par exemple avec le chiffrement réseau natif Oracle.
+thick_mode = false
+instant_client_dir =
+
+
+[test]
+user = MON_USER
+dsn = serveur-test:1521/SERVICE_TEST
+table = SCHEMA.TABLE_SWIFT
+id_column = MSG_ID
+msg_column = MSG_TEXT
+ts_column = "TIMESTAMP"
+type_column = MSG_TYPE
+where =
+thick_mode = false
+instant_client_dir =

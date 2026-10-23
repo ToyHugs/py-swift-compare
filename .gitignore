@@ -1,0 +1,12 @@
+/config.ini
+*.sqlite
+/recon_mt535.xlsx
+
+*.md
+!README.md
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
