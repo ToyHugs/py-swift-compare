@@ -1,7 +1,12 @@
-# Réconciliation SWIFT MT535 — CTRL / TEST
+# Réconciliation SWIFT MT535 / MT536 — CTRL / TEST
 
-Compare **tous les champs** des MT535 de deux bases d'un progiciel bancaire (ancienne version = CTRL,
-nouvelle version = TEST) : l'entête `GENL` et chaque champ de chaque position (ISIN ou `/XX/…`).
+Compare **tous les champs** des messages SWIFT de deux bases d'un progiciel bancaire (ancienne version = CTRL,
+nouvelle version = TEST).
+
+- `swift_recon.py` — MT535 (relevé de positions) : l'entête `GENL` et chaque champ de chaque
+  position (ISIN ou `/XX/…`).
+- `mt536.py` — MT536 (relevé de mouvements) : appariement des transactions entre CTRL et TEST
+  puis comparaison champ à champ (entête, instrument, transaction).
 
 ## Installation
 
@@ -62,3 +67,18 @@ python swift_recon.py demo/config_demo.ini
 
 Lit des messages exemples dans `demo/ctrl` et `demo/test` (écarts volontaires : prix modifié,
 ISIN manquant, ISIN en trop, entête modifié, pagination et formats différents).
+
+## MT536 (mouvements titres)
+
+`mt536.py` fonctionne pour l'instant en mode autonome (dossiers de messages → CSV), sans
+connexion Oracle :
+
+```
+python mt536.py demo536/ctrl demo536/test -o demo536 --ignore "28E,20C:SEME,98C:PREP,20C:PREV,20C:RELA"
+```
+
+Produit `mt536_transactions.csv`, `mt536_ecarts.csv` et `mt536_erreurs.csv` dans le dossier indiqué
+par `-o`. Les transactions sont appariées par référence (facultatif), puis par clé forte, puis par
+similarité, avant la comparaison champ à champ.
+
+Tests : `pytest` (voir `pytest.ini` et `tests/`).
